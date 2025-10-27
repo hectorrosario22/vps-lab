@@ -40,13 +40,13 @@ docker-compose up -d
 ```
 
 Esto iniciará tres servicios:
-- **Frontend**: http://localhost (puerto 80)
+- **Frontend**: http://localhost:3000 (puerto 3000)
 - **Backend API**: http://localhost:5000
 - **PostgreSQL**: puerto 5432
 
 ### 3. Acceder a la aplicación
 
-Abre tu navegador y ve a: http://localhost
+Abre tu navegador y ve a: http://localhost:3000
 
 ## 📁 Estructura del Proyecto
 
@@ -139,8 +139,10 @@ DB_NAME=taskmanager
 
 ### Frontend (.env)
 ```env
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=
 ```
+
+**Nota**: El frontend usa Nginx como proxy reverso, por lo que las peticiones a `/api` son redirigidas automáticamente al backend. No necesitas configurar la URL de la API manualmente.
 
 ## 🐳 Deployment en Dokploy
 
