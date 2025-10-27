@@ -41,14 +41,9 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "${FRONTEND_PORT:-3000}:80"
+      - "80"
     depends_on:
       - backend
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend-http.rule=Host(`taskmanager.hrosario.dev`)"
-      - "traefik.http.services.frontend-service.loadbalancer.server.port=${FRONTEND_PORT:-3000}"
-      - "traefik.http.routers.frontend-http.entrypoints=websecure"
 
 volumes:
   taskmanager_pg_data:
