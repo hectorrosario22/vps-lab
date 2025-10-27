@@ -104,6 +104,26 @@ docker-compose down -v
 docker-compose up -d --build
 ```
 
+## ⚙️ Configuración con Dokploy / Variables
+
+Este `docker-compose.yml` está parametrizado para que puedas configurar puertos y credenciales desde Dokploy o con un archivo `.env` en el raíz.
+
+Variables soportadas (con defaults):
+
+- `FRONTEND_PORT` (default `3000`)
+- `BACKEND_PORT` (default `5000`)
+- `POSTGRES_PORT` (default `5432`)
+- `DB_HOST` (default `db`)
+- `DB_USER` (default `postgres`)
+- `DB_PASSWORD` (default `postgres`)
+- `DB_NAME` (default `taskmanager`)
+
+Copia `.env.example` a `.env` o define estas variables en la UI de Dokploy para el deployment.
+
+### Error: port is already allocated
+
+Si recibes un error como `Bind for 0.0.0.0:3000 failed: port is already allocated`, cambia `FRONTEND_PORT` a un puerto libre (ej. `3001` o `8080`) y vuelve a desplegar.
+
 ## 🌐 API Endpoints
 
 ### Health Check
