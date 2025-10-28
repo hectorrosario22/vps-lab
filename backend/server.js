@@ -21,7 +21,7 @@ app.use(express.json());
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    message: 'Task Manager API is running',
+    message: 'Task Manager API is running well',
     version: '1.0.1',
     timestamp: new Date().toISOString()
   });
