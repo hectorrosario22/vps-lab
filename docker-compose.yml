@@ -40,17 +40,15 @@ services:
     labels:
       - "traefik.enable=true"
       # HTTPS Router
-      - "traefik.http.routers.backend-api.rule=Host(`labs.taskmanager.hrosario.dev`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-api.rule=Host(`taskmanager.hrosario.dev`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend-api.entrypoints=websecure"
       - "traefik.http.routers.backend-api.tls=true"
       - "traefik.http.routers.backend-api.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.backend-api.service=backend-api"
       - "traefik.http.routers.backend-api.priority=100"
       # HTTP Router (redirect to HTTPS)
-      - "traefik.http.routers.backend-api-http.rule=Host(`labs.taskmanager.hrosario.dev`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-api-http.rule=Host(`taskmanager.hrosario.dev`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend-api-http.entrypoints=web"
       - "traefik.http.routers.backend-api-http.middlewares=https-redirect"
-      - "traefik.http.routers.backend-api-http.service=backend-api"
       - "traefik.http.routers.backend-api-http.priority=100"
       # Service
       - "traefik.http.services.backend-api.loadbalancer.server.scheme=http"
@@ -70,17 +68,15 @@ services:
     labels:
       - "traefik.enable=true"
       # HTTPS Router
-      - "traefik.http.routers.frontend-web.rule=Host(`labs.taskmanager.hrosario.dev`)"
+      - "traefik.http.routers.frontend-web.rule=Host(`taskmanager.hrosario.dev`)"
       - "traefik.http.routers.frontend-web.entrypoints=websecure"
       - "traefik.http.routers.frontend-web.tls=true"
       - "traefik.http.routers.frontend-web.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.frontend-web.service=frontend-web"
       - "traefik.http.routers.frontend-web.priority=50"
       # HTTP Router (redirect to HTTPS)
-      - "traefik.http.routers.frontend-web-http.rule=Host(`labs.taskmanager.hrosario.dev`)"
+      - "traefik.http.routers.frontend-web-http.rule=Host(`taskmanager.hrosario.dev`)"
       - "traefik.http.routers.frontend-web-http.entrypoints=web"
       - "traefik.http.routers.frontend-web-http.middlewares=https-redirect"
-      - "traefik.http.routers.frontend-web-http.service=frontend-web"
       - "traefik.http.routers.frontend-web-http.priority=50"
       # Service
       - "traefik.http.services.frontend-web.loadbalancer.server.scheme=http"
