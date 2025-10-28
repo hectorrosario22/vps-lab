@@ -106,23 +106,39 @@ docker-compose up -d --build
 
 ## ⚙️ Configuración con Dokploy / Variables
 
-Este `docker-compose.yml` está parametrizado para que puedas configurar puertos y credenciales desde Dokploy o con un archivo `.env` en el raíz.
+Este `docker-compose.yml` está parametrizado para que puedas configurar dominios, puertos y credenciales desde Dokploy o con un archivo `.env` en el raíz.
 
 Variables soportadas (con defaults):
 
-- `FRONTEND_PORT` (default `3000`)
-- `BACKEND_PORT` (default `5000`)
-- `POSTGRES_PORT` (default `5432`)
+### Base de Datos
 - `DB_HOST` (default `db`)
+- `DB_PORT` (default `5432`)
 - `DB_USER` (default `postgres`)
 - `DB_PASSWORD` (default `postgres`)
 - `DB_NAME` (default `taskmanager`)
 
+### CORS y API URL
+- `CORS_ORIGINS` (default `https://labs-taskmanager-web.hrosario.dev,http://localhost:5173,http://localhost:3000`)
+- `VITE_API_URL` (default `https://labs-taskmanager-api.hrosario.dev`)
+
 Copia `.env.example` a `.env` o define estas variables en la UI de Dokploy para el deployment.
 
-### Error: port is already allocated
+### Arquitectura de Dominios
 
-Si recibes un error como `Bind for 0.0.0.0:3000 failed: port is already allocated`, cambia `FRONTEND_PORT` a un puerto libre (ej. `3001` o `8080`) y vuelve a desplegar.
+Este proyecto usa **dominios separados** para frontend y backend:
+
+- **Frontend**: `labs-taskmanager-web.hrosario.dev`
+- **Backend API**: `labs-taskmanager-api.hrosario.dev`
+
+**Configuración DNS requerida en Cloudflare:**
+```
+Tipo: A | Nombre: labs-taskmanager-web  | IP: [TU_SERVIDOR] | Proxy: Activado
+Tipo: A | Nombre: labs-taskmanager-api  | IP: [TU_SERVIDOR] | Proxy: Activado
+```
+
+**SSL/TLS Settings:**
+- Encryption mode: "Full (strict)"
+- Always Use HTTPS: Activado
 
 ## 🌐 API Endpoints
 
@@ -159,20 +175,69 @@ DB_NAME=taskmanager
 
 ### Frontend (.env)
 ```env
-VITE_API_URL=
+VITE_API_URL=https://labs-taskmanager-api.hrosario.dev
 ```
 
-**Nota**: El frontend usa Nginx como proxy reverso, por lo que las peticiones a `/api` son redirigidas automáticamente al backend. No necesitas configurar la URL de la API manualmente.
+**Nota**: La variable `VITE_API_URL` debe configurarse como **build argument** en Docker. El frontend en producción llama directamente al dominio API separado.
+
+### Backend (.env adicional)
+```env
+CORS_ORIGINS=https://labs-taskmanager-web.hrosario.dev,http://localhost:5173
+```
 
 ## 🐳 Deployment en Dokploy
 
 Este proyecto está optimizado para deployment en Dokploy:
 
+### Paso 1: Configurar DNS en Cloudflare
+
+Crea dos registros DNS tipo A:
+- `labs-taskmanager-web` → IP de tu servidor Dokploy (Proxy: Activado ☁️)
+- `labs-taskmanager-api` → IP de tu servidor Dokploy (Proxy: Activado ☁️)
+
+### Paso 2: Configurar SSL/TLS en Cloudflare
+
+En la sección SSL/TLS de Cloudflare:
+- **Encryption mode**: "Full (strict)"
+- **Always Use HTTPS**: Activado
+- **Minimum TLS Version**: 1.2
+
+### Paso 3: Deployment en Dokploy
+
 1. Sube el proyecto a un repositorio Git
-2. En Dokploy, crea una nueva aplicación
+2. En Dokploy, crea una nueva aplicación tipo "Docker Compose"
 3. Conecta tu repositorio
-4. Dokploy detectará automáticamente el `docker-compose.yml`
-5. Despliega la aplicación
+4. Configura las variables de entorno:
+   ```env
+   VITE_API_URL=https://labs-taskmanager-api.hrosario.dev
+   CORS_ORIGINS=https://labs-taskmanager-web.hrosario.dev
+   DB_PASSWORD=tu_password_seguro
+   ```
+5. Dokploy detectará automáticamente el `docker-compose.yml`
+6. Despliega la aplicación (asegúrate de hacer rebuild completo)
+7. Espera 2-3 minutos para que Let's Encrypt emita los certificados SSL
+
+### Verificar Deployment
+
+```bash
+# Backend health check
+curl https://labs-taskmanager-api.hrosario.dev/health
+
+# Frontend
+curl https://labs-taskmanager-web.hrosario.dev/
+```
+
+### Troubleshooting
+
+**Error: ERR_SSL_VERSION_OR_CIPHER_MISMATCH**
+- Verifica que los registros DNS estén configurados correctamente
+- Asegúrate de que Cloudflare SSL/TLS esté en modo "Full (strict)"
+- Espera a que Let's Encrypt emita los certificados (2-3 minutos)
+
+**Frontend muestra error de API**
+- Verifica que `VITE_API_URL` esté configurado como build argument
+- Haz rebuild completo del frontend en Dokploy
+- Verifica CORS en el backend
 
 ## 📝 Desarrollo Local (sin Docker)
 
