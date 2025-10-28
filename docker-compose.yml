@@ -45,10 +45,12 @@ services:
       - "traefik.http.routers.backend-api.entrypoints=websecure"
       - "traefik.http.routers.backend-api.tls=true"
       - "traefik.http.routers.backend-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.backend-api.service=backend-api"
       # HTTP Router (redirect to HTTPS)
       - "traefik.http.routers.backend-api-http.rule=Host(`labs-taskmanager-api.hrosario.dev`)"
       - "traefik.http.routers.backend-api-http.entrypoints=web"
       - "traefik.http.routers.backend-api-http.middlewares=https-redirect"
+      - "traefik.http.routers.backend-api-http.service=backend-api"
       # Service
       - "traefik.http.services.backend-api.loadbalancer.server.scheme=http"
       - "traefik.http.services.backend-api.loadbalancer.server.port=5000"
@@ -73,10 +75,12 @@ services:
       - "traefik.http.routers.frontend-web.entrypoints=websecure"
       - "traefik.http.routers.frontend-web.tls=true"
       - "traefik.http.routers.frontend-web.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.frontend-web.service=frontend-web"
       # HTTP Router (redirect to HTTPS)
       - "traefik.http.routers.frontend-web-http.rule=Host(`labs-taskmanager-web.hrosario.dev`)"
       - "traefik.http.routers.frontend-web-http.entrypoints=web"
       - "traefik.http.routers.frontend-web-http.middlewares=https-redirect"
+      - "traefik.http.routers.frontend-web-http.service=frontend-web"
       # Service
       - "traefik.http.services.frontend-web.loadbalancer.server.scheme=http"
       - "traefik.http.services.frontend-web.loadbalancer.server.port=80"
