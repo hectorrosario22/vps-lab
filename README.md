@@ -24,7 +24,22 @@ Una aplicación fullstack simple de gestión de tareas construida con React, Nod
 - Docker
 - Docker Compose
 
-## 🚀 Inicio Rápido
+## 📂 Estructura del Proyecto
+
+Este proyecto está configurado para funcionar de dos maneras:
+
+### 🏠 Desarrollo Local
+Usa **docker-compose.dev.yml** para correr todo el stack localmente (DB + Backend + Frontend)
+
+### 🌐 Producción (Dokploy)
+Despliega cada servicio **por separado**:
+- PostgreSQL Managed Database
+- Backend como servicio Docker
+- Frontend como servicio Docker
+
+---
+
+## 🚀 Inicio Rápido (Desarrollo Local)
 
 ### 1. Clonar el repositorio
 
@@ -33,18 +48,27 @@ git clone <repository-url>
 cd vps-lab
 ```
 
-### 2. Levantar los servicios con Docker Compose
+### 2. Configurar variables de entorno (opcional)
 
 ```bash
-docker-compose up -d
+cp .env.example .env
+# Los valores por defecto funcionan bien para desarrollo
+```
+
+### 3. Levantar los servicios con Docker Compose
+
+**IMPORTANTE:** Usa `docker-compose.dev.yml` para desarrollo local:
+
+```bash
+docker-compose -f docker-compose.dev.yml up -d
 ```
 
 Esto iniciará tres servicios:
-- **Frontend**: http://localhost:3000 (puerto 3000)
+- **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:5000
-- **PostgreSQL**: puerto 5432
+- **PostgreSQL**: puerto 5432 (interno)
 
-### 3. Acceder a la aplicación
+### 4. Acceder a la aplicación
 
 Abre tu navegador y ve a: http://localhost:3000
 
@@ -68,31 +92,60 @@ vps-lab/
 │   ├── Dockerfile          # Imagen Docker del frontend (multi-stage)
 │   ├── nginx.conf          # Configuración de Nginx
 │   └── vite.config.js      # Configuración de Vite
-└── docker-compose.yml      # Orquestación de servicios
+├── docker-compose.dev.yml  # Desarrollo local (DB + Backend + Frontend)
+├── docker-compose.yml      # Referencia para estructura
+└── README.DEPLOYMENT.md    # Guía de deployment en Dokploy
 ```
 
-## 🔧 Comandos Útiles
+## 🔧 Comandos Útiles (Desarrollo Local)
 
 ### Ver logs de los servicios
 
 ```bash
 # Todos los servicios
-docker-compose logs -f
+docker-compose -f docker-compose.dev.yml logs -f
 
 # Solo el backend
-docker-compose logs -f backend
+docker-compose -f docker-compose.dev.yml logs -f backend
 
 # Solo el frontend
-docker-compose logs -f frontend
+docker-compose -f docker-compose.dev.yml logs -f frontend
 ```
 
 ### Detener los servicios
 
 ```bash
-docker-compose down
+docker-compose -f docker-compose.dev.yml down
 ```
 
 ### Detener y eliminar volúmenes (reinicio completo)
+
+```bash
+docker-compose -f docker-compose.dev.yml down -v
+```
+
+### Reconstruir imágenes después de cambios en el código
+
+```bash
+docker-compose -f docker-compose.dev.yml up -d --build
+```
+
+---
+
+## 🌐 Deployment en Producción
+
+Para desplegar en producción con Dokploy usando servicios separados, consulta:
+
+### 📖 [README.DEPLOYMENT.md](README.DEPLOYMENT.md)
+
+Esta guía incluye:
+- Configuración de PostgreSQL Managed Database
+- Deploy independiente de Backend y Frontend
+- Configuración DNS y SSL con Cloudflare
+- Troubleshooting de errores comunes
+- Estrategias de rollback y monitoreo
+
+---
 
 ```bash
 docker-compose down -v

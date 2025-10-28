@@ -1,89 +1,18 @@
+# Este archivo es SOLO para referencia de la estructura.
+
 services:
-  # PostgreSQL Database
+  # En Producción: PostgreSQL Managed Database
   db:
     image: postgres:15-alpine
-    user: ${DB_USER:-postgres}
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${DB_NAME:-taskmanager}
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-    volumes:
-      - taskmanager_pg_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
-  # Backend API
+  # En Producción: Servicio Docker individual
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    restart: unless-stopped
-    environment:
-      DB_HOST: ${DB_HOST:-db}
-      DB_PORT: ${DB_PORT:-5432}
-      DB_USER: ${DB_USER:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      DB_NAME: ${DB_NAME:-taskmanager}
-      CORS_ORIGINS: ${CORS_ORIGINS:-https://labs-taskmanager-web.hrosario.dev,http://localhost:5173,http://localhost:3000}
-    depends_on:
-      db:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:5000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    labels:
-      - "traefik.enable=true"
-      # HTTPS Router
-      - "traefik.http.routers.backend-api.rule=Host(`labs-taskmanager-api.hrosario.dev`)"
-      - "traefik.http.routers.backend-api.entrypoints=websecure"
-      - "traefik.http.routers.backend-api.tls=true"
-      - "traefik.http.routers.backend-api.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.backend-api.service=backend-api"
-      # HTTP Router (redirect to HTTPS)
-      - "traefik.http.routers.backend-api-http.rule=Host(`labs-taskmanager-api.hrosario.dev`)"
-      - "traefik.http.routers.backend-api-http.entrypoints=web"
-      - "traefik.http.routers.backend-api-http.middlewares=https-redirect"
-      - "traefik.http.routers.backend-api-http.service=backend-api"
-      # Service
-      - "traefik.http.services.backend-api.loadbalancer.server.scheme=http"
-      - "traefik.http.services.backend-api.loadbalancer.server.port=5000"
-      # Middleware
-      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
 
-  # Frontend
+  # En Producción: Servicio Docker individual
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL:-https://labs-taskmanager-api.hrosario.dev}
-    restart: unless-stopped
-    depends_on:
-      - backend
-    labels:
-      - "traefik.enable=true"
-      # HTTPS Router
-      - "traefik.http.routers.frontend-web.rule=Host(`labs-taskmanager-web.hrosario.dev`)"
-      - "traefik.http.routers.frontend-web.entrypoints=websecure"
-      - "traefik.http.routers.frontend-web.tls=true"
-      - "traefik.http.routers.frontend-web.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.frontend-web.service=frontend-web"
-      # HTTP Router (redirect to HTTPS)
-      - "traefik.http.routers.frontend-web-http.rule=Host(`labs-taskmanager-web.hrosario.dev`)"
-      - "traefik.http.routers.frontend-web-http.entrypoints=web"
-      - "traefik.http.routers.frontend-web-http.middlewares=https-redirect"
-      - "traefik.http.routers.frontend-web-http.service=frontend-web"
-      # Service
-      - "traefik.http.services.frontend-web.loadbalancer.server.scheme=http"
-      - "traefik.http.services.frontend-web.loadbalancer.server.port=80"
-
-volumes:
-  taskmanager_pg_data:
