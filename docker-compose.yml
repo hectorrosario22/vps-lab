@@ -56,7 +56,7 @@ services:
       - backend
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend-web.rule=Host(`labs.taskmanager.hrosario.dev`) && PathPrefix(`/app`)"
+      - "traefik.http.routers.frontend-web.rule=Host(`labs.taskmanager.hrosario.dev`)"
       - "traefik.http.routers.frontend-web.entrypoints=websecure"
       - "traefik.http.routers.frontend-web.tls=true"
       - "traefik.http.routers.frontend-web.tls.options=default@dokploy"
