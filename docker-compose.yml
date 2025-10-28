@@ -31,6 +31,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.taskmanager-api.rule=Host(`labs.taskmanager.hrosario.dev`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.taskmanager-api.entrypoints=websecure"
+      - "traefik.http.routers.taskmanager-api.tls=true"
+      - "traefik.http.services.taskmanager-api.loadbalancer.server.port=5000"
 
   # Frontend
   frontend:
