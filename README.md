@@ -2,6 +2,8 @@
 
 Una aplicación fullstack simple de gestión de tareas construida con React, Node.js/Express y PostgreSQL, completamente dockerizada.
 
+> **Versión:** 1.0.1 | **Última actualización:** Octubre 2025
+
 ## 🚀 Stack Tecnológico
 
 - **Frontend**: React 18 + Vite
