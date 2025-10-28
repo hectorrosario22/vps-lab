@@ -38,7 +38,7 @@ services:
       retries: 5
       start_period: 20s
     labels:
-      - "traefik.enable=true"
+      # - "traefik.enable=true"
       - "traefik.http.routers.backend-api.rule=Host(`labs.taskmanager.hrosario.dev`) && PathPrefix(`/api`)"
       # - "traefik.http.routers.backend-api.entrypoints=websecure"
       # - "traefik.http.routers.backend-api.tls=true"
@@ -55,7 +55,7 @@ services:
     depends_on:
       - backend
     labels:
-      - "traefik.enable=true"
+      # - "traefik.enable=true"
       - "traefik.http.routers.frontend-web.rule=Host(`labs.taskmanager.hrosario.dev`)"
       # - "traefik.http.routers.frontend-web.entrypoints=websecure"
       # - "traefik.http.routers.frontend-web.tls=true"
