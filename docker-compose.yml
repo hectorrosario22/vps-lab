@@ -62,6 +62,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     restart: unless-stopped
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-https://labs-taskmanager-api.hrosario.dev}
     depends_on:
       - backend
     labels:
