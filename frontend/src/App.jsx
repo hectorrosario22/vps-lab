@@ -92,7 +92,8 @@ function App() {
     <div className="app">
       <div className="container">
         <h1>📝 Task Manager</h1>
-        
+        <p className="subtitle">Manage your tasks efficiently v1.0.1</p>
+
         <form onSubmit={addTask} className="task-form">
           <input
             type="text"
