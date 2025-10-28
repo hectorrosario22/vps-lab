@@ -7,7 +7,14 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+const corsOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',')
+  : ['http://localhost:5173', 'http://localhost:3000'];
+
+app.use(cors({
+  origin: corsOrigins,
+  credentials: true
+}));
 app.use(express.json());
 
 // Health check
