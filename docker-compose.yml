@@ -4,8 +4,6 @@ services:
     image: postgres:15-alpine
     user: ${DB_USER:-postgres}
     restart: unless-stopped
-    ports:
-      - 5432
     environment:
       POSTGRES_DB: ${DB_NAME:-taskmanager}
       POSTGRES_USER: ${DB_USER:-postgres}
@@ -24,8 +22,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - 5000
     environment:
       DB_HOST: ${DB_HOST:-db}
       DB_PORT: ${DB_PORT:-5432}
@@ -42,10 +38,14 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - 80
     depends_on:
       - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mi-app.rule=Host(`labs.taskmanager.hrosario.dev`)"
+      - "traefik.http.routers.mi-app.entrypoints=websecure"
+      - "traefik.http.routers.mi-app.tls=true"
+      - "traefik.http.services.mi-app.loadbalancer.server.port=80"
 
 volumes:
   taskmanager_pg_data:
